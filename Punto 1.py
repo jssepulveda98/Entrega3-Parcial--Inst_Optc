@@ -10,27 +10,29 @@ import cv2
     3. Programar la funcion h
     4. Multiplicar la TF de h con la TF de la imagen
     
-
+    f1=20 mm, f2=200 mm, r=20*0.25
 """
 
-def Umatrix(z, w_l, dx0, N):
+def Pupila(z, w_l, dx0, N):
     """
     Incident wave and transmittance function
     In this case: plane wave and circular aperture 
     """
+    na=0.25
     dy0=dx0
     x=np.arange(-N/2,N/2)
     y=np.arange(-N/2,N/2)
     x,y=np.meshgrid(x,y)
-    Nzones=20       #Number of Fresnel zones
-    lim=Nzones*w_l*z
-    U_matrix=(dx0*x)**2 + (dy0*y)**2
+#    Nzones=20       #Number of Fresnel zones
+#    lim=Nzones*w_l*z
+    lim=0.25*20*dx0
+    U_matrix=(x*dx0)**2 + (y*dy0)**2
     U_matrix[np.where(U_matrix<=lim)]=1
     U_matrix[np.where(U_matrix>lim)]=0
 
     return U_matrix
 
-def FT(Uin, w_l, f1, f2, z):
+def FT(Uin, w_l, f1, f2, dx0, z):
     "-----Step 1------"
     k=2*np.pi/w_l
     N,M=np.shape(Uin)
@@ -40,8 +42,8 @@ def FT(Uin, w_l, f1, f2, z):
     #phase=np.exp((1j*k)/(2*z)*(((X*dx0)**2) + ((Y*dx0)**2)))
     U1=Uin*f1/f2
     "-----Step 2-----"
-    #X=X*(1/(M*dx0))
-    #Y=Y*(1/(N*dx0))
+    X=X*(1/(M*dx0))
+    Y=Y*(1/(N*dx0))
     Uf=np.fft.fftshift(np.fft.fft2(U1))
     "-----Step 3-----"
 
@@ -50,3 +52,15 @@ def FT(Uin, w_l, f1, f2, z):
     
     return Uf
 
+
+U_0=cv2.imread('cameraman.png',0)
+    
+    
+    
+    
+    
+    
+    
+    
+
+    
