@@ -11,7 +11,7 @@ def Tmatrix(w_length, deltax0, deltay0, M,N):
     x=np.arange(-M,M)
     y=np.arange(-N,N)
     x,y=np.meshgrid(x,y)
-    lim=600**2  #Radius of 1000um
+    lim=750**2  #Radius of 750um
     A=701*deltax0
     B=445*deltay0
     T_matrix=(deltax0*x-A)**2 + (deltay0*y+B)**2
@@ -52,8 +52,12 @@ holo= cv2.imread("Hologram.tiff",0)
 FTholo= np.fft.fft2(holo)
 FTholo= np.fft.fftshift(FTholo)
 Iholo=np.log(np.abs(FTholo)**2)
-Filter=T*Iholo
+Filter=T*FTholo
+IFilter=np.log((np.abs(Filter)**2)+0.0001)
+InvFT=np.fft.ifft2(Filter)
+IInvFT=np.abs(InvFT)**2
 
 plt.imsave("Transmittance.png",T, cmap='gray') 
 plt.imsave("Fourier Transform Hologram.png",Iholo, cmap='gray')   
-plt.imsave("FT Hologram filtered.png",Filter, cmap='gray')  
+plt.imsave("FT Hologram filtered.png",IFilter, cmap='gray')  
+plt.imsave("Inverse FT filtered.png",IInvFT, cmap='gray')   
