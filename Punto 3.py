@@ -32,12 +32,12 @@ def Ref(w_length, deltax0, deltay0, M,N):
     thetax=0.068284  #3.9124 degrees
     thetay=0.04336   #2.48449 degrees
 
-    Ref=np.exp(1j*k*deltax0*x*np.sin(thetax))*np.exp(-1j*k*deltay0*y*np.sin(thetay))
+    Ref=np.exp(-1j*k*deltax0*x*np.sin(thetax))*np.exp(1j*k*deltay0*y*np.sin(thetay))
 
-    R=np.fft.fft2(Ref)
-    R=np.fft.fftshift(R)
+    FTRef=np.fft.fft2(Ref)
+    FTRef=np.fft.fftshift(FTRef)
 
-    return R
+    return Ref,FTRef
 
 def Fresnel(Field, z, deltax0, deltay0, w_length, deltax, deltay, M, N):
     """
@@ -55,7 +55,8 @@ def Fresnel(Field, z, deltax0, deltay0, w_length, deltax, deltay, M, N):
     F= np.fft.fft2(Field*expFT*deltax0*deltay0)
     
     amp = np.exp(((1j*k)/(2*z))*((X*deltax)**2+(Y*deltay)**2))*(np.exp(1j*k*z)/(1j*w_length*z))
-    F= np.fft.fftshift(F)*amp
+    #F= np.fft.fftshift(F)*amp
+    F=F*amp
     
     return F
 """
@@ -97,15 +98,15 @@ FTholo= np.fft.fft2(holo)
 FTholo= np.fft.fftshift(FTholo)
 Filter=T*FTholo
 InvFT=np.fft.ifft2(Filter)
-R=Ref(w_length, deltax0, deltay0, M,N)
-U1=InvFT*R
+Ref,FTRef=Ref(w_length, deltax0, deltay0, M,N)
+U1=InvFT*Ref
 Reconst=Fresnel(U1, z, deltax0, deltay0, w_length, deltax, deltay, M, N)
 
 #Intensity
 Iholo=np.log(np.abs(FTholo)**2)
 IFilter=np.log((np.abs(Filter)**2)+0.0001)
 IInvFT=np.abs(InvFT)**2
-IR=np.log(np.abs(R)**2)
+IR=np.log(np.abs(FTRef)**2)
 IU1=np.log(np.abs(U1)**2)
 IReconst=(np.abs(Reconst)**2)
 
