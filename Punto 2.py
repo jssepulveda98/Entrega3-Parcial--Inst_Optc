@@ -19,7 +19,7 @@ def Pupila(w_l, dx0, N):
     In this case: plane wave and circular aperture 
     """
     na=0.25
-#    dx0=w_l*20*(1e3)/(4*N*dx0)
+    dx0=w_l*20*(1e3)/(4*N*dx0)
     dy0=dx0
     N=2*N
     x=np.arange(-N,N)
