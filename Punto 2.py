@@ -27,9 +27,9 @@ def Pupila(w_l, dx0, N):
     x,y=np.meshgrid(x,y)
     x=x*dx0
     y=y*dy0
-    #lim=na*20*1e3/np.sqrt(1-0.25*0.25)      #20000 um= 20 mm
-    lim=2*1e5
-    U_matrix=(x/(w_l*2*1e5))**2 + (y/(w_l*2*1e5))**2
+    lim=na*2*1e4/np.sqrt(1-0.25*0.25)      #20000 um= 20 mm
+#    lim=2*1e5
+    U_matrix=(x)**2 + (y)**2
     U_matrix[np.where(U_matrix<=lim)]=1
     U_matrix[np.where(U_matrix>lim)]=0
     print (lim, 512*w_l*200*1e3)
@@ -47,8 +47,8 @@ def Imagen(w_l, dx0, N):
     y=np.arange(-N,N)
     x,y=np.meshgrid(x,y)
 
-    lim=1e3         #Tamaño 10 mm
-    U_matrix=(x*dx0*0.1)**2 + (y*dy0*0.1)**2
+    lim=1e4         #Tamaño 10 mm
+    U_matrix=(x*dx0)**2 + (y*dy0)**2
     U_matrix[np.where(U_matrix<=lim)]=1
     U_matrix[np.where(U_matrix>lim)]=0
 #    print (lim, 512*w_l*200*1e3)
@@ -56,7 +56,7 @@ def Imagen(w_l, dx0, N):
 
 
 w_l=0.533          #(533nm)
-dx0=25.              #2.5um tamaño de pixel
+dx0=1.             #2.5um tamaño de pixel
 N=M=int(512/2)     #Number of pixels
 
 
@@ -74,12 +74,12 @@ r=int(512/2)
 P=Pupila(w_l, dx0, N)
 P_FT=np.fft.fft2(P/(w_l*2*1e5))
 
-U_1=(np.fft.fftn(U_0*(dx0)**2))
+U_1=0.1*np.fft.fftshift(np.fft.fftn(0.1*U_0*(dx0)**2))
 
 
 
-Uf=U_1*P*0.1
-Uf=(1/1j*w_l*2*1e5)*np.fft.fftshift(np.fft.fftn(Uf*dx0**2))
+Uf=U_1*P
+Uf=(np.fft.fftn(Uf*dx0**2))
 I1=np.log(np.abs(U_1)**2)
 I=(np.abs(Uf)**2) 
 angle=np.angle(Uf) 
