@@ -29,7 +29,7 @@ def Pupila(w_l, dx0, N):
     y=y*dy0
 #    Nzones=20       #Number of Fresnel zones
 #    lim=Nzones*w_l*z
-    lim=na*20*1e3/np.sqrt((1-0.25*0.25))      #20000 um= 20 mm
+    lim=na*20*1e3/np.sqrt(1-0.25*0.25)      #20000 um= 20 mm
     U_matrix=(x*dx0)**2 + (y*dx0)**2
     U_matrix[np.where(U_matrix<=lim)]=1
     U_matrix[np.where(U_matrix>lim)]=0
