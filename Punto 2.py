@@ -25,8 +25,8 @@ def Pupila(w_l, dx0, N):
     x=np.arange(-N,N)
     y=np.arange(-N,N)
     x,y=np.meshgrid(x,y)
-    x=x*dx0
-    y=y*dy0
+#    x=x*dx0
+#    y=y*dy0
     lim=na*20*1e3/np.sqrt(1-0.25*0.25)      #20000 um= 20 mm
 #    lim=1e5
     U_matrix=(x)**2 + (y)**2
