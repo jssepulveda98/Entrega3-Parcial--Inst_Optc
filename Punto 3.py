@@ -52,6 +52,8 @@ holo= cv2.imread("Hologram.tiff",0)
 FTholo= np.fft.fft2(holo)
 FTholo= np.fft.fftshift(FTholo)
 Iholo=np.log(np.abs(FTholo)**2)
+Filter=T*Iholo
 
 plt.imsave("Transmittance.png",T, cmap='gray') 
 plt.imsave("Fourier Transform Hologram.png",Iholo, cmap='gray')   
+plt.imsave("FT Hologram filtered.png",Filter, cmap='gray')  
