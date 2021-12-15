@@ -27,13 +27,12 @@ def Pupila(w_l, dx0, N):
     x,y=np.meshgrid(x,y)
     x=x*dx0
     y=y*dy0
-#    Nzones=20       #Number of Fresnel zones
-#    lim=Nzones*w_l*z
     lim=na*20*1e3/np.sqrt(1-0.25*0.25)      #20000 um= 20 mm
-    U_matrix=(x*dx0)**2 + (y*dx0)**2
+#    lim=1e5
+    U_matrix=(x)**2 + (y)**2
     U_matrix[np.where(U_matrix<=lim)]=1
     U_matrix[np.where(U_matrix>lim)]=0
-    print (lim, 512*w_l*200*1e3)
+#    print (lim, 512*w_l*200*1e3)
     return U_matrix
 
 
@@ -49,20 +48,21 @@ U_0=cv2.imread('cameraman.png',0)
     
 r=int(512/2)
 U_0 = cv2.copyMakeBorder(U_0,r,r,r,r,cv2.BORDER_CONSTANT)
-#U_0=U_0/10.
+U_0=U_0/10
 
 #U_1=np.fft.fft2(0.1*U_0*dx0**2)
 P=Pupila(w_l, dx0, N)
 #P_FT=FT(P/(w_l*200000), w_l, dx0)
 
-U_1=np.fft.fftshift(np.fft.fftn(0.1*U_0*dx0**2))
+U_1=np.fft.fftshift(np.fft.fftn(U_0*dx0**2))
 
-Uf=0.1*U_1*P/(w_l*2*1e6)
-Uf=np.fft.ifft(Uf)
+
+
+Uf=U_1*P/(w_l*20*1e3)
+Uf=np.fft.fftn(Uf)
 I1=np.log(np.abs(U_1)**2)
 I=(np.abs(Uf)**2) 
-
-print (1e6)
+angle=np.angle(Uf) 
 
 plt.figure(1)
 plt.imshow(U_0, cmap='gray')
@@ -71,7 +71,7 @@ plt.figure(2)
 plt.imshow(P, cmap='gray')
 
 plt.figure(3)
-plt.imshow(I1, cmap='gray')
+plt.imshow(angle, cmap='gray')
 
 plt.figure(4)
 plt.imshow(I, cmap='gray')
