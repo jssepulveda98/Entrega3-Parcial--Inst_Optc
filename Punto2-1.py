@@ -48,7 +48,7 @@ def Imagen(w_l, dx0, N):
     x,y=np.meshgrid(x,y)
 
     lim=1e3         #1 mm
-    U_matrix=(50+x*dx0)**2 + (50+y*dy0)**2
+    U_matrix=(100+x*dx0)**2 + (100+y*dy0)**2
     U_matrix[np.where(U_matrix<=lim)]=1
     U_matrix[np.where(U_matrix>lim)]=0
     
@@ -107,6 +107,7 @@ angle=np.angle(Uf)
 
 plt.figure(1)
 plt.imshow(U_0, cmap='gray',extent=[-x,x,-y,y])
+plt.imsave("Puntos.png",U_0, cmap='gray')
 
 plt.figure(2)
 plt.imshow(P, cmap='gray')
@@ -116,5 +117,5 @@ plt.imshow(angle, cmap='gray')
 
 plt.figure(4)
 plt.imshow(I, cmap='gray', extent=[-x,x,-y,y])
-plt.imsave("Criterio",I, cmap='gray')
+plt.imsave("Criterio.png",I, cmap='gray')
     
