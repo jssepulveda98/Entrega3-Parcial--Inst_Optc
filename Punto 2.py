@@ -111,6 +111,7 @@ plt.imshow(angle, cmap='gray')
 
 plt.figure(4)
 plt.imshow(I, cmap='gray', extent=[-x,x,-y,y])
+plt.imsave("Final-cameraman.png",I, cmap='gray')
     
     
     
