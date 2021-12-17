@@ -4,59 +4,69 @@ import cv2
 
 
 """
-    ESQUEMA
-    1. Discretizar la imagen de entrada
-    2. Calcular la TF de la imagen magnificada
-    3. Programar la funcion h
-    4. Multiplicar la TF de h con la TF de la imagen
+    Scheme
+    1. Discretize the input image
+    2. Takking the fft 
+    3. Simulate the pupil function or system H function 
+    4. Make the convolution of the FT image with the H function
     
     f1=20 mm, f2=200 mm, r=20*0.25
 """
 
-def Pupila(z, w_l, dx0, N):
+
+
+def Pupila(w_l, dx0, N):
     """
     Incident wave and transmittance function
     In this case: plane wave and circular aperture 
     """
-    na=0.25
+    na=9.4E-6
+    dx0=0.7
     dy0=dx0
-    x=np.arange(-N/2,N/2)
-    y=np.arange(-N/2,N/2)
+    N=N/2
+    x=np.arange(-N,N)
+    y=np.arange(-N,N)
     x,y=np.meshgrid(x,y)
-#    Nzones=20       #Number of Fresnel zones
-#    lim=Nzones*w_l*z
-    lim=0.25*20*dx0
-    U_matrix=(x*dx0)**2 + (y*dy0)**2
-    U_matrix[np.where(U_matrix<=lim)]=1
-    U_matrix[np.where(U_matrix>lim)]=0
-
+    x=x*dx0
+    y=y*dy0
+    lim=2000#2*1e4/np.sqrt(1-0.25*0.25)      #20000 um= 20 mm
+#    lim=2*1e5
+    U_matrix=(x)**2 + (y)**2
+    U_matrix[np.where(np.abs(U_matrix)<=lim)]=1
+    U_matrix[np.where(np.abs(U_matrix)>lim)]=0
+    
     return U_matrix
 
-def FT(Uin, w_l, f1, f2, dx0, z):
-    "-----Step 1------"
-    k=2*np.pi/w_l
-    N,M=np.shape(Uin)
-    x=np.arange(-N/2,N/2,1)
-    y=np.arange(-M/2,M/2,1)
-    X,Y=np.meshgrid(x,y)
-    #phase=np.exp((1j*k)/(2*z)*(((X*dx0)**2) + ((Y*dx0)**2)))
-    U1=Uin*f1/f2
-    "-----Step 2-----"
-    X=X*(1/(M*dx0))
-    Y=Y*(1/(N*dx0))
-    Uf=np.fft.fftshift(np.fft.fft2(U1))
-    "-----Step 3-----"
+def Zeros(Image):
+    N=max(np.shape(Image))
+    if N%2 != 0:
+        N=N+1
+        
+    Zeros=np.zeros((N,N))
+    print(np.shape(Zeros))
+    Zeros[0:np.shape(Image)[0],0:np.shape(Image)[1]]=Image
+    return Zeros
 
-    #c1=np.exp(1j*k*z)/(1j*w_l*z)
-    #Uf=Uf*c1*(np.exp((1j*(k/2*z))*((X*dx)**2 + (Y*dx)**2)))
+def Form(Image,ld):
+    Im=Zeros(Image)
     
-    return Uf
+    P=Pupila(ld,2.5,2836)
+    
+    Im=np.fft.fftshift(np.fft.fftn((15E-3/600)*Im))
+    P=(1/(ld**2  *600*15*1e-3))*(np.fft.fftn(P/(ld*600*1e6)))
+    
+    Im=np.fft.fftshift(np.fft.ifftn(Im*P))
+    
+    plt.imshow(np.abs(Im)**2,cmap="gray")
 
 
-U_0=cv2.imread('cameraman.png',0)
-    
-    
-    
+
+
+image=cv2.imread("gala-desnuda-mirando.jpg",0)
+
+
+
+Form(image,700)
     
     
     
