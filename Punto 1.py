@@ -10,27 +10,29 @@ import cv2
     3. Simulate the pupil function or system H function 
     4. Make the convolution of the FT image with the H function
     
-    f1=20 mm, f2=200 mm, r=20*0.25
+    
 """
 
 
 
-def Pupila(w_l, dx0, N):
+def Pupila(w_l, dx0, N,Prop):
     """
     Incident wave and transmittance function
     In this case: plane wave and circular aperture 
     """
-    na=9.4E-6
-    dx0=0.7
+    
+    f=1/((1/15e3) -(1/Prop))
+    na=(1e3)/np.sqrt(f**2 +(1e-3)**2)
+    dx0=w_l*Prop/(dx0*N)
     dy0=dx0
-    N=N/2
+    N=N
     x=np.arange(-N,N)
     y=np.arange(-N,N)
     x,y=np.meshgrid(x,y)
     x=x*dx0
     y=y*dy0
-    lim=2000#2*1e4/np.sqrt(1-0.25*0.25)      #20000 um= 20 mm
-#    lim=2*1e5
+    lim=1000*na     
+
     U_matrix=(x)**2 + (y)**2
     U_matrix[np.where(np.abs(U_matrix)<=lim)]=1
     U_matrix[np.where(np.abs(U_matrix)>lim)]=0
@@ -42,31 +44,41 @@ def Zeros(Image):
     if N%2 != 0:
         N=N+1
         
-    Zeros=np.zeros((N,N))
-    print(np.shape(Zeros))
-    Zeros[0:np.shape(Image)[0],0:np.shape(Image)[1]]=Image
+    Zeros=np.zeros((2*N,2*N))
+    n,m=np.shape(Image)[0],np.shape(Image)[1]
+    Zeros[int(N -n/2): int(N +n/2),int(N -m/2): int(N+m/2)]=Image
+    
     return Zeros
 
-def Form(Image,ld):
+def Form(Image,ld,dx0,Prop):
     Im=Zeros(Image)
+    n,m=np.shape(Image)[0],np.shape(Image)[1]
+    N=max(np.shape(Image))
+    Pu=Pupila(ld,dx,2836,Prop)
     
-    P=Pupila(ld,2.5,2836)
+    Im=(15e3/Prop)*np.fft.fftshift(np.fft.fftn((15e3/Prop)*Im *(dx0)**2))
+    P=(np.fft.fftn(Pu/(ld*Prop)))
     
-    Im=np.fft.fftshift(np.fft.fftn((15E-3/600)*Im))
-    P=(1/(ld**2  *600*15*1e-3))*(np.fft.fftn(P/(ld*600*1e6)))
+    Im=(np.fft.ifftn(Im*Pu))
     
-    Im=np.fft.fftshift(np.fft.ifftn(Im*P))
     
-    plt.imshow(np.abs(Im)**2,cmap="gray")
+    I=np.abs(Im[int(N -n/2): int(N +n/2),int(N -m/2): int(N+m/2)])**2
+    
+    
+    plt.figure()
+    plt.imshow(I,cmap="gray")
+    plt.imsave("Prop %d m.jpg" %(Prop/1e6),I,cmap="gray")
 
 
 
 
 image=cv2.imread("gala-desnuda-mirando.jpg",0)
 
+dx=24e4
+Prop=1e6*np.array([200])
 
-
-Form(image,700)
+for i in Prop:
+    Form(image,0.700,dx,i)
     
     
     
