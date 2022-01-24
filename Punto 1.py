@@ -22,7 +22,7 @@ def Pupila(w_l, dx0, N,Prop):
     """
     
     f=1/((1/15e3) -(1/Prop))
-    na=(1e3)/np.sqrt(f**2 +(1e-3)**2)
+    na=(1e3)/np.sqrt(f**2 +(1e3)**2)
     dx0=w_l*Prop/(dx0*N)
     dy0=dx0
     N=N
@@ -31,7 +31,7 @@ def Pupila(w_l, dx0, N,Prop):
     x,y=np.meshgrid(x,y)
     x=x*dx0
     y=y*dy0
-    lim=1000*na     
+    lim=2000*na     
 
     U_matrix=(x)**2 + (y)**2
     U_matrix[np.where(np.abs(U_matrix)<=lim)]=1
@@ -75,7 +75,7 @@ def Form(Image,ld,dx0,Prop):
 image=cv2.imread("gala-desnuda-mirando.jpg",0)
 
 dx=24e4
-Prop=1e6*np.array([200])
+Prop=1e6*np.array([1,100,200,300,500])
 
 for i in Prop:
     Form(image,0.700,dx,i)
